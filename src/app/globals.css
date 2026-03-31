@@ -1,26 +1,282 @@
 @import "tailwindcss";
 
+/* Enforce class-based dark mode logic for Tailwind v4 */
+@custom-variant dark (&:is(.dark *), &:is(.dark));
+
+/* ===================== DESIGN SYSTEM ===================== */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Primary Colors */
+  --primary: #006bff;
+  --primary-hover: #0055cc;
+
+  /* Header */
+  --header-bg: #0d4f4f;
+  --header-bg-dark: #0a3a3a;
+
+  /* Light Mode */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f5f5;
+  --bg-tertiary: #f1f1f1;
+  --text-primary: #000000;
+  --text-secondary: #555555;
+  --text-muted: #708090;
+  --border-light: #e3e3e3;
+  --border-search: #bfbfbf;
+  --hover-gray: #e3e3e3;
+
+  /* Dark Mode */
+  --dark-bg-primary: #121212;
+  --dark-bg-secondary: #1e1e1e;
+  --dark-bg-tertiary: #252525;
+  --dark-bg-card: #2e2e2e;
+  --dark-text-primary: #ffffff;
+  --dark-text-secondary: #8c8b8b;
+  --dark-border: rgba(255, 255, 255, 0.2);
+
+  /* Accent Colors */
+  --yellow-accent: #f4b400;
+  --green-stock: #22c55e;
+  --red-price: #ef4444;
+  --cancel-btn: #b0b0b0;
+
+  /* Chat */
+  --chat-green: #25D366;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ===================== FONTS ===================== */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v24/pxiEyp8kv8JHgFVrJJfecg.woff2) format('woff2');
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 300 800;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/opensans/v44/memvYaGs126MiZpBA-UvWbX2vVnXBbObj2OVTS-muw.woff2) format('woff2');
+}
+
+/* ===================== BASE STYLES ===================== */
+body {
+  font-family: 'Poppins', sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Light Mode (default) */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* Dark Mode */
+body.dark {
+  background-color: var(--dark-bg-primary);
+  color: var(--dark-text-primary);
+}
+
+/* ===================== SCROLLBAR ===================== */
+.scrollbar-hide {
+  overflow: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* ===================== STOCK BADGE ===================== */
+.stock-badge {
+  position: absolute;
+  top: -6px;
+  right: -12px;
+  width: 70px;
+  height: 70px;
+  overflow: hidden;
+  z-index: 5;
+}
+
+.stock-badge::before {
+  content: 'Stock High';
+  position: absolute;
+  top: 18px;
+  right: -18px;
+  width: 100px;
+  padding: 2px 0;
+  background-color: #22c55e;
+  color: white;
+  text-align: center;
+  font-size: 9px;
+  font-weight: 600;
+  transform: rotate(45deg);
+  letter-spacing: 0.5px;
+}
+
+/* Dark mode stock badge */
+body.dark .stock-badge::before {
+  background-color: #16a34a;
+}
+
+/* ===================== SWIPER CUSTOM ===================== */
+.hero-swiper .swiper-button-prev,
+.hero-swiper .swiper-button-next {
+  color: white;
+  background: rgba(0, 0, 0, 0.3);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+}
+
+.hero-swiper .swiper-button-prev::after,
+.hero-swiper .swiper-button-next::after {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.hero-swiper .swiper-pagination-bullet {
+  background-color: #006bff;
+  width: 6px;
+  height: 6px;
+}
+
+.hero-swiper .swiper-pagination-bullet-active {
+  background-color: #006bff;
+}
+
+/* ===================== PRICE HIDDEN ANIMATION ===================== */
+@keyframes slideIn {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.price-banner {
+  animation: slideIn 0.5s ease-out;
+}
+
+/* ===================== PRODUCT CARD HOVER ===================== */
+.product-card {
+  transition: all 0.2s ease;
+}
+
+.product-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+body.dark .product-card:hover {
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05);
+}
+
+/* ===================== FILTER OVERLAY ===================== */
+.filter-overlay {
+  transition: opacity 0.3s ease;
+}
+
+.filter-sidebar {
+  transition: transform 0.3s ease;
+}
+
+/* ===================== QUANTITY SELECTOR ===================== */
+.qty-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--border-light);
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  color: inherit;
+  border-radius: 2px;
+  transition: all 0.15s ease;
+}
+
+.qty-btn:hover {
+  background-color: var(--hover-gray);
+}
+
+body.dark .qty-btn {
+  border-color: var(--dark-border);
+}
+
+body.dark .qty-btn:hover {
+  background-color: var(--dark-bg-tertiary);
+}
+
+/* ===================== ADD TO CART BUTTON ===================== */
+.add-to-cart-btn {
+  width: 100%;
+  padding: 6px 0;
+  border: 1px solid var(--border-light);
+  background: transparent;
+  cursor: pointer;
+  font-size: 11px;
+  font-family: 'Poppins', sans-serif;
+  color: inherit;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.add-to-cart-btn:hover {
+  background-color: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+body.dark .add-to-cart-btn {
+  border-color: var(--dark-border);
+}
+
+/* ===================== MOBILE FILTER TABS ===================== */
+.mobile-filter-tab {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 11px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid var(--border-light);
+  background: white;
+}
+
+.mobile-filter-tab.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+body.dark .mobile-filter-tab {
+  background: var(--dark-bg-secondary);
+  border-color: var(--dark-border);
+  color: var(--dark-text-primary);
+}
+
+body.dark .mobile-filter-tab.active {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+/* ===================== APP INSTALL BAR ===================== */
+.app-install-bar {
+  background: white;
+  border-bottom: 1px solid var(--border-light);
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+body.dark .app-install-bar {
+  background: var(--dark-bg-secondary);
+  border-color: var(--dark-border);
 }
