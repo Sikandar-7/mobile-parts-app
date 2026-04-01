@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 export default function AppInstallBar() {
   const [visible, setVisible] = useState(true);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [showiOSInstructions, setShowiOSInstructions] = useState(false);
+  const [instructionData, setInstructionData] = useState({ show: false, title: "", message: "" });
 
   useEffect(() => {
     // Listen for the beforeinstallprompt event globally
@@ -20,27 +20,62 @@ export default function AppInstallBar() {
   }, []);
 
   const handleInstallClick = async () => {
-    // Check if user is on iOS
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const ua = navigator.userAgent;
+    const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const isChrome = /CriOS|Chrome/.test(ua) && !/Edge|Edg|OPR|Opera/.test(ua);
+    const isFirefox = /FxiOS|Firefox/.test(ua);
 
     if (isIOS) {
-      // iOS Safari does not support programmatic install prompts
-      setShowiOSInstructions(true);
+      // iOS browsers
+      if (isChrome) {
+        setInstructionData({
+          show: true,
+          title: "Install on iOS Chrome",
+          message: "To install, tap the <strong>Share</strong> icon (an arrow) at the top right corner of Chrome, then scroll down and select <strong>'Add to Home Screen'</strong>."
+        });
+      } else if (isFirefox) {
+        setInstructionData({
+          show: true,
+          title: "Install on iOS Firefox",
+          message: "To install, tap the <strong>Menu</strong> icon, select <strong>Share</strong>, and then tap <strong>'Add to Home Screen'</strong>."
+        });
+      } else {
+        // Default to Safari
+        setInstructionData({
+          show: true,
+          title: "Install on iPhone Safari",
+          message: "To install, tap the <strong>Share</strong> button at the bottom center of your Safari menu, scroll down, and select <strong>'Add to Home Screen'</strong>."
+        });
+      }
       return;
     }
 
     if (deferredPrompt) {
-      // Show the native Android/Chrome install prompt
+      // Native Android/Chrome install prompt works
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
       console.log(`User response to the install prompt: ${outcome}`);
       setDeferredPrompt(null);
       setVisible(false);
     } else {
-      // Fallback
-      alert("Please install through your browser's menu (Add to Home Screen).");
+      // Fallback for Android/Desktop browsers without deferredPrompt
+      if (isFirefox) {
+        setInstructionData({
+          show: true,
+          title: "Install on Firefox",
+          message: "To install, tap the <strong>Menu</strong> (three dots) and select <strong>'Install'</strong> or <strong>'Add to Home Screen'</strong>."
+        });
+      } else {
+         setInstructionData({
+          show: true,
+          title: "App Already Installed / Unsupported",
+          message: "This app may already be installed on your device, or your browser requires you to install it manually from the <strong>Browser Menu -> Add to Home screen</strong>."
+        });
+      }
     }
   };
+
+  const closeInstructions = () => setInstructionData({ ...instructionData, show: false });
 
   if (!visible) return null;
 
@@ -71,9 +106,9 @@ export default function AppInstallBar() {
         </div>
       </div>
 
-      {/* iOS Manual Install Instructions */}
-      {showiOSInstructions && (
-        <div className="fixed inset-0 bg-black/60 z-[11000] flex justify-center items-end pb-8 px-4" onClick={() => setShowiOSInstructions(false)}>
+      {/* Dynamic Manual Install Instructions Modal */}
+      {instructionData.show && (
+        <div className="fixed inset-0 bg-black/60 z-[11000] flex justify-center items-end pb-8 px-4" onClick={closeInstructions}>
           <div className="bg-white dark:bg-[#1e1e1e] p-6 rounded-2xl w-full text-center shadow-lg relative" onClick={e => e.stopPropagation()}>
             <div className="flex justify-center mb-3">
               <div className="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
@@ -84,11 +119,12 @@ export default function AppInstallBar() {
                 </svg>
               </div>
             </div>
-            <h3 className="font-bold text-lg mb-2 text-black dark:text-white">Install App on iPhone</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-300 mb-6 px-2">
-              To install, simply tap the <strong>Share</strong> button at the bottom of your Safari menu, scroll down, and select <strong>"Add to Home Screen"</strong>.
-            </p>
-            <button onClick={() => setShowiOSInstructions(false)} className="w-full bg-[#006bff] text-white rounded-xl py-3.5 font-bold shadow-md hover:bg-[#0055cc] transition-colors">
+            <h3 className="font-bold text-lg mb-2 text-black dark:text-white">{instructionData.title}</h3>
+            <p 
+              className="text-sm text-gray-600 dark:text-gray-300 mb-6 px-2"
+              dangerouslySetInnerHTML={{ __html: instructionData.message }}
+            />
+            <button onClick={closeInstructions} className="w-full bg-[#006bff] text-white rounded-xl py-3.5 font-bold shadow-md hover:bg-[#0055cc] transition-colors">
               Got It
             </button>
           </div>
