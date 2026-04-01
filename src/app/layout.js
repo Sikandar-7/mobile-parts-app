@@ -1,5 +1,6 @@
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import PwaManager from "@/components/PwaManager";
 
 export const metadata = {
   metadataBase: new URL("http://localhost:3000"),
@@ -20,6 +21,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className="h-full antialiased">
       <body className="min-h-full flex flex-col">
+        <PwaManager />
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
