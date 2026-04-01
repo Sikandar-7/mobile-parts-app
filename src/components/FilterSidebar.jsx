@@ -62,7 +62,8 @@ export default function FilterSidebar({ isOpen, onClose, filters, setFilters }) 
               {categories.map((cat) => (
                 <label
                   key={cat}
-                  className="flex items-center justify-between cursor-pointer hover:bg-gray-50 px-1 py-0.5 rounded transition-colors"
+                  onClick={() => handleCategoryChange(cat)}
+                  className="flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-[#1e1e1e] p-2 rounded transition-colors"
                 >
                   <span className="text-sm">{cat}</span>
                   <span
@@ -93,7 +94,8 @@ export default function FilterSidebar({ isOpen, onClose, filters, setFilters }) 
               {brands.map((brand) => (
                 <label
                   key={brand}
-                  className="flex items-center justify-between cursor-pointer hover:bg-gray-50 px-1 py-0.5 rounded transition-colors"
+                  onClick={() => handleBrandChange(brand)}
+                  className="flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-[#1e1e1e] p-2 rounded transition-colors"
                 >
                   <span className="text-sm">{brand}</span>
                   <span
@@ -124,7 +126,8 @@ export default function FilterSidebar({ isOpen, onClose, filters, setFilters }) 
               {priceRanges.map((range) => (
                 <label
                   key={range.label}
-                  className="flex items-center justify-between cursor-pointer hover:bg-gray-50 px-1 py-0.5 rounded transition-colors"
+                  onClick={() => handlePriceChange(range)}
+                  className="flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-[#1e1e1e] p-2 rounded transition-colors"
                 >
                   <span className="text-sm">{range.label}</span>
                   <span
